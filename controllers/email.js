@@ -16,18 +16,19 @@ const sendEmail= (request, response) => {
     console.log('params: ', params);
 
     let transporter = nodemailer.createTransport({
-        host: 'smtp.mailtrap.io',
-        port: 2525,
+        host: 'smtp.gmail.com',
+        port: 465, 
+        secure: true,
         // service: 'gmail',
         auth: {
-          user: '38ce556befd572',
-          pass: '11108f1df482e7'
+          user: 'meddylex.development@gmail.com',
+          pass: 'eejnoxuksuawommh'
         }
     });
       
     let mailOptions = {
-        from: 'meddylex.development@gmail.com',
-        to: 'gpinilladev@gmail.com',
+        from: 'Kustodya App<meddylex.development@gmail.com>',
+        to: params.email,
         subject: 'Sending Email using Node.js',
         text: 'That was easy!'
     };
@@ -35,8 +36,10 @@ const sendEmail= (request, response) => {
     transporter.sendMail(mailOptions, function(error, info){
         if (error) {
           console.log(error);
+          response.status(500).send({ error: error });
         } else {
           console.log('Email sent: ' + info.response);
+          response.status(200).send({ response: 'Email sent: ' + info });
         }
     });
     
