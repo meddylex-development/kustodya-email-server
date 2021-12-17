@@ -2,7 +2,7 @@
 let express = require("express"); // Se importa la libreria de expres para que funcione como backend el entorno
 let bodyParser = require("body-parser"); // Analiza los json y los decodifica para enviarlos y recibirlos desde back
 let mongoose = require("mongoose"); // Libreria para trabajar con las base de datos mongo DB
-const nodemailer = require('nodemailer');
+// const nodemailer = require('nodemailer');
 
 // Variable para puerto de conexion del backend
 let port = process.env.PORT || 3001 // Procesar y enviar puertos. process nos ayuda a mantener los dos entornos tanto de prod como local:3001
@@ -44,7 +44,7 @@ mongoose.connect("mongodb://localhost:27017/kustodyadb",
             console.log("Servidor backend funcionando en el puerto: " + port);     
         });
     }
-}); 
+});
 
 // const mensajeRespuesta = () => {
 //     console.log("Servidor backend funcionando en el puerto: " + port); 

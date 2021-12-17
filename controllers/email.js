@@ -27,7 +27,7 @@ const sendEmail= (request, response) => {
       
     let mailOptions = {
         from: 'meddylex.development@gmail.com',
-        to: 'gepinilladev@gmail.com',
+        to: 'gpinilladev@gmail.com',
         subject: 'Sending Email using Node.js',
         text: 'That was easy!'
     };
