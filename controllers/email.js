@@ -264,27 +264,6 @@ const sendEmailReport= (request, response) => {
     let replacements = {
       urlLogo: urlLogo,
       urlPhotoProfileDoctor: urlPhotoProfileDoctor,
-      patientname: params.patientname,
-      patientEmail: params.patientEmail,
-      patientDocumentNumber: params.patientDocumentNumber,
-      patientTotalIncapacities: params.patientIncapacities['totalItems'],
-      doctorname: params.doctorname,
-      doctorEmail: params.doctorEmail,
-      doctorjobeps: params.doctorjobeps,
-      doctorjobips: params.doctorjobips,
-      doctorDocumentNumber: params.doctorDocumentNumber,
-      doctorMedicalRegister: params.doctorMedicalRegister,
-      doctorEspeciality: params.doctorEspeciality,
-      // correlationIncapacity: params.correlationIncapacity['bProrroga'],
-      flagDiasDeIncapacidad: params.flagDiasDeIncapacidad,
-      diasAcumuladosProrroga: params.diasAcumuladosProrroga,
-      diasDeIncapacidadOtorgados: params.diasDeIncapacidadOtorgados,
-      diasMaximoConsulta: params.diasMaximoConsulta,
-      diasExcedidosDiferencia: (params.diasMaximoConsulta && params.diasDeIncapacidadOtorgados) ? params.diasDeIncapacidadOtorgados - params.diasMaximoConsulta : '0',
-      diasDeIncapacidadOtorgadosJustificacion: params.diasDeIncapacidadOtorgadosJustificacion,
-      patientDiagnostics: params.patientDiagnostics,
-      patientDaysGaratedDescription: params.patientDaysGaratedDescription,
-      patientConditionMedicalDescription: params.patientConditionMedicalDescription,
     };
     console.log('replacements: ', replacements);
     let htmlToSend = template(replacements);
