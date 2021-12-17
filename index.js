@@ -56,6 +56,18 @@ mongoose.connect("mongodb://localhost:27017/kustodyadb",
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+    res.header("Content-Type: application/json");
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Access-Control-Allow-Request-Method"
+    );
+    res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+    res.header("Allow", "GET, PUT, POST, DELETE, OPTIONS");
+    next();
+  });
+
 // usar rutas (API)
 app.use("/api", User);
 app.use("/api", Category);
