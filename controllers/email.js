@@ -45,6 +45,8 @@ const sendEmail= (request, response) => {
     readHTMLFile('templates/email-alert-incapacity-02.html').then((responseData) => {
       // console.log('responseData: ', responseData);
 
+      let urlFile = path.join(__dirname, '..', 'templates/files/DiasAcumulados540.xlsx');
+      console.log('urlFile: ', urlFile);
       let urlLogo = path.join(__dirname, '..', 'templates/images/KustodyYmeddylex.png');
       console.log('urlLogo: ', urlLogo);
       let urlPhotoProfileDoctor = path.join(__dirname, '..', 'templates/images/person_2.jpeg');
@@ -98,7 +100,7 @@ const sendEmail= (request, response) => {
           to: params.email,
           subject: params.subject,
           // text: 'That was easy!'
-          html : htmlToSend
+          html : htmlToSend,
       };
         
       transporter.sendMail(mailOptions, function(error, info){
@@ -237,58 +239,105 @@ const getDataReport = (url_api) => {
   })
 };
 
-const invocarServicio = (options) => {
-  return new Promise((resolve, reject) => {
-  var req = http.request(options, function(res) {
-      var contentType = res.headers['content-type'];
+// funcion que regitra un usuario
+const sendEmailReport= (request, response) => {
+  // console.log('request: ', request);
+  // console.log('response: ', response);
+  // Obtenemos los parametros del body del JSON lo que viene en la API
+  let params = request.body;
+  console.log('params: ', params);
 
-      /**
-       * Variable para guardar los datos del servicio RESTfull.
-       */
-      var data = '';
+  readHTMLFile('templates/email-alert-incapacity-03.html').then((responseData) => {
+    // console.log('responseData: ', responseData);
 
-      res.on('data', (chunk) => {
-          // Cada vez que se recojan datos se agregan a la variable
-          data += chunk;
-          resolve(data);
-      }).on('end', () => {
-          // Al terminar de recibir datos los procesamos
-          var response = null;
+    let urlFile = path.join(__dirname, '..', 'templates/files/DiasAcumulados540.xlsx');
+    console.log('urlFile: ', urlFile);
+    let urlLogo = path.join(__dirname, '..', 'templates/images/KustodyYmeddylex.png');
+    console.log('urlLogo: ', urlLogo);
+    let urlPhotoProfileDoctor = path.join(__dirname, '..', 'templates/images/person_2.jpeg');
+    console.log('urlPhotoProfileDoctor: ', urlPhotoProfileDoctor);
 
-          // Nos aseguramos de que sea tipo JSON antes de convertirlo.
-          if (contentType.indexOf('application/json') != -1) {
-              response = JSON.parse(data);
-              resolve(response);
-          }
+    let patientIncapacities = params.patientIncapacities;
+    console.log('patientIncapacities: ', patientIncapacities);
 
-          // Invocamos el next con los datos de respuesta
-          // next(response, null);
-      }).on('error', (err) => {
-          // Si hay errores los sacamos por consola
-          console.error('Error al procesar el mensaje: ' + err)
-      }).on('uncaughtException', (err) => {
-          // Si hay alguna excepción no capturada la sacamos por consola
-          console.error(err);
-      });
-  }).on('error', (err) => {
-      // Si hay errores los sacamos por consola y le pasamos los errores a next.
-      console.error('HTTP request failed: ' + err);
-      // next(null, err);
-  });
-
-  // Si la petición tiene datos estos se envían con la request
-  // if (jsonObject) {
-  //     req.write(jsonObject);
-  // }
-
-  req.end();
-
-  });
+    let template = handlebars.compile(responseData);
+    let replacements = {
+      urlLogo: urlLogo,
+      urlPhotoProfileDoctor: urlPhotoProfileDoctor,
+      patientname: params.patientname,
+      patientEmail: params.patientEmail,
+      patientDocumentNumber: params.patientDocumentNumber,
+      patientTotalIncapacities: params.patientIncapacities['totalItems'],
+      doctorname: params.doctorname,
+      doctorEmail: params.doctorEmail,
+      doctorjobeps: params.doctorjobeps,
+      doctorjobips: params.doctorjobips,
+      doctorDocumentNumber: params.doctorDocumentNumber,
+      doctorMedicalRegister: params.doctorMedicalRegister,
+      doctorEspeciality: params.doctorEspeciality,
+      // correlationIncapacity: params.correlationIncapacity['bProrroga'],
+      flagDiasDeIncapacidad: params.flagDiasDeIncapacidad,
+      diasAcumuladosProrroga: params.diasAcumuladosProrroga,
+      diasDeIncapacidadOtorgados: params.diasDeIncapacidadOtorgados,
+      diasMaximoConsulta: params.diasMaximoConsulta,
+      diasExcedidosDiferencia: (params.diasMaximoConsulta && params.diasDeIncapacidadOtorgados) ? params.diasDeIncapacidadOtorgados - params.diasMaximoConsulta : '0',
+      diasDeIncapacidadOtorgadosJustificacion: params.diasDeIncapacidadOtorgadosJustificacion,
+      patientDiagnostics: params.patientDiagnostics,
+      patientDaysGaratedDescription: params.patientDaysGaratedDescription,
+      patientConditionMedicalDescription: params.patientConditionMedicalDescription,
+    };
+    console.log('replacements: ', replacements);
+    let htmlToSend = template(replacements);
+    // console.log('htmlToSend: ', htmlToSend);
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465, 
+        secure: true,
+        // service: 'gmail',
+        auth: {
+          user: 'meddylex.development@gmail.com',
+          pass: 'eejnoxuksuawommh'
+        }
+    });
+      
+    let mailOptions = {
+        from: 'Kustodya App <meddylex.development@gmail.com>',
+        to: params.email,
+        subject: params.subject,
+        // text: 'That was easy!'
+        html : htmlToSend,
+        attachments: [
+          {   // utf-8 string as an attachment
+              filename: urlFile,
+              content: 'Kustodya Report'
+          },
+        ],
+    };
+      
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+          response.status(500).send({ error: error });
+        } else {
+          console.log('Email sent: ' + info.response);
+          response.status(200).send({ response: info });
+          // getDataReport('http://meddylex-001-site4.itempurl.com/API').then(resp => {
+          //   console.log('resp: ', resp);
+          //   fnGenerateXlsxFromJson().then(respFile => {
+          //     console.log('respFile: ', respFile);
+          //   });
+          // });
+          
+        }
+    });
+  })    
 };
+
 
 // Exportamos el modulo
 module.exports = {
     sendEmail,
     trackEmail,
     fnGenerateXlsxFromJson,
+    sendEmailReport,
 };

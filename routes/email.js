@@ -14,6 +14,9 @@ api.post("/send-email", Email.sendEmail);
 // Servicio POST para registrar actividad en envio de correos
 // http://localhost:3001/api/registrar-usuario 
 api.post("/track-email", Email.trackEmail);
+// Servicio POST para registrar actividad en envio de correos
+// http://localhost:3001/api/send-email-report 
+api.post("/send-email-report", Email.sendEmailReport);
 
 // Exportamos el modulo
 module.exports = api;
