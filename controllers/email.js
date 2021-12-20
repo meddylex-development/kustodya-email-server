@@ -287,8 +287,9 @@ const sendEmailReport= (request, response) => {
         html : htmlToSend,
         attachments: [
           {   // utf-8 string as an attachment
-              filename: urlFile,
-              content: 'Kustodya Report'
+              // filename: urlFile,
+              filename: 'ArchivoReporte.xlsx',
+              path: urlFile,
           },
         ],
     };
