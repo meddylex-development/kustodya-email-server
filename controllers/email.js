@@ -41,8 +41,21 @@ const sendEmail= (request, response) => {
     // Obtenemos los parametros del body del JSON lo que viene en la API
     let params = request.body;
     console.log('params: ', params);
+    let templateEmailToSend = '';
 
-    readHTMLFile('templates/email-alert-incapacity-02.html').then((responseData) => {
+    switch (params.typeMail) {
+      case 1:
+        templateEmailToSend = 'templates/email-alert-incapacity-04.html';
+        break;
+      case 2:
+        templateEmailToSend = 'templates/email-alert-incapacity-05.html';
+        break;
+      case 3:
+        templateEmailToSend = 'templates/email-alert-incapacity-06.html';
+        break;
+    }
+
+    readHTMLFile(templateEmailToSend).then((responseData) => {
       // console.log('responseData: ', responseData);
 
       let urlFile = path.join(__dirname, '..', 'templates/files/DiasAcumulados540.xlsx');
