@@ -9,12 +9,17 @@ let XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 const xl = require('excel4node');
 const wb = new xl.Workbook();
 const ws = wb.addWorksheet('Worksheet Name');
-var http = require('http');
+const https = require('https')
+
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 // Variable para importar pass
 let bcrypt = require("bcrypt-nodejs");
 // Importamos el jwt
 let jwt = require("../libs/jwt");
+
+// Importamos la libreria para el manejo de horas fechas - tiempo
+let moment = require("moment");
 
 const readHTMLFile = (pathTmp) => {
   console.log('pathTmp: ', pathTmp);
@@ -75,12 +80,16 @@ const sendEmail= (request, response) => {
         patientname: params.patientname,
         patientEmail: params.patientEmail,
         patientDocumentNumber: params.patientDocumentNumber,
+        patientDocumentType: params.patientDocumentType,
+        patientPhoneNumber: "+601"+params.patientPhoneNumber,
         patientTotalIncapacities: params.patientIncapacities['totalItems'],
         doctorname: params.doctorname,
         doctorEmail: params.doctorEmail,
         doctorjobeps: params.doctorjobeps,
         doctorjobips: params.doctorjobips,
         doctorDocumentNumber: params.doctorDocumentNumber,
+        doctorDocumentNumberType: params.doctorDocumentNumberType,
+        doctorPhoneNumber: params.doctorPhoneNumber,
         doctorMedicalRegister: params.doctorMedicalRegister,
         doctorEspeciality: params.doctorEspeciality,
         // correlationIncapacity: params.correlationIncapacity['bProrroga'],
@@ -93,6 +102,10 @@ const sendEmail= (request, response) => {
         patientDiagnostics: params.patientDiagnostics,
         patientDaysGaratedDescription: params.patientDaysGaratedDescription,
         patientConditionMedicalDescription: params.patientConditionMedicalDescription,
+        fechaEmision: moment().format('DD/MM/YYYY HH:mm'),
+        incapacityNumber: moment().valueOf(),
+        userProgramType: params.userProgramType,
+        userOcupation: params.userOcupation,
       };
       console.log('replacements: ', replacements);
       let htmlToSend = template(replacements);
@@ -202,10 +215,11 @@ const fnGenerateXlsxFromJson = (data) => {
   });
 };
 
-const getDataReport = (url_api) => {
-  return new Promise ((resolve, reject) => {
+const getDataReport = (request, response) => {
+  // return new Promise ((resolve, reject) => {
 
     // fetch('http://meddylex-001-site4.itempurl.com/API').then(res => {
+    //   console.log('res: ', res);
     //   let data = res.json();
     //   console.log('data: ', data);
     //   resolve(data);
@@ -217,39 +231,55 @@ const getDataReport = (url_api) => {
     //   reject(err);
     // });
 
-    return new Promise((resolve, reject) => {
-      // let xobj = new XMLHttpRequest();
-      let urlAPI = url_api;
-      // let path = '/users';
- 
-      let options = {
-          // host: host,
-          // port: port,
-          path: urlAPI,
-          method: 'GET',
-          // encoding: null
-      };
-      invocarServicio(options).then(res => {
-        console.log('res: ', res);
-        resolve(data);
-      }).then((responseData) => {
-        console.log('responseData: ', responseData);
-        resolve(responseData);
-      }).catch(err => {
-        console.log(err);
-        reject(err);
-      });
-      // // xobj.overrideMimeType("application/json");
-      // xobj.open("GET", urlAPI, true); // Reemplaza colombia-json.json con el nombre que le hayas puesto
-      // xobj.onreadystatechange = function () {
-      //   if (xobj.readyState == 4 && xobj.status === 200) {
-      //     resolve(JSON.parse(xobj.responseText));
-      //   }
-      // };
-      // xobj.send(null);
-    })
+    // var xobj = new XMLHttpRequest();
+    // let urlAPI = 'http://meddylex-001-site4.itempurl.com/api/Transcripcion';
+    // xobj.overrideMimeType("application/json");
+    // xobj.open("GET", urlAPI, true); // Reemplaza colombia-json.json con el nombre que le hayas puesto
+    // xobj.onreadystatechange = function () {
+    //   if (xobj.readyState == 4 && xobj.status === 200) {
+    //     resolve(JSON.parse(xobj.responseText));
+    //   }
+    // };
+    // xobj.send(null);
 
-  })
+    // fetch('https://jsonplaceholder.typicode.com/users')
+    //   .then(response => {
+    //     console.log('response: ', response);
+    //     return response.json();
+    //   }).then(json => {
+    //     console.log(json)
+    //     resolve(json)
+    //   })
+
+    // const url = "http://meddylex-001-site4.itempurl.com/api/Transcripcion";
+    // https.get(url, res => {
+    //   let data = '';
+    //   res.on('data', chunk => {
+    //     data += chunk;
+    //   });
+    //   res.on('end', () => {
+    //     data = JSON.parse(data);
+    //     console.log(data);
+    //   })
+    // }).on('error', err => {
+    //   console.log(err.message);
+    // })
+
+    fetch("http://meddylex-001-site4.itempurl.com/api/Transcripcion")
+    .then(res => res.json())
+    .then(json => {
+      console.log(json);
+      if (json) {
+        // resolve(json);
+        response.status(200).send({ response: json });
+      } else {
+        // reject(false)
+        response.status(500).send({ response: null });
+      }
+    });
+
+
+  // })
 };
 
 // funcion que regitra un usuario
@@ -333,4 +363,5 @@ module.exports = {
     trackEmail,
     fnGenerateXlsxFromJson,
     sendEmailReport,
+    getDataReport,
 };

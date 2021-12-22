@@ -334,7 +334,7 @@
                                         <td>
                                             <h2>Tipo Programa:</h2>
                                             <div style="border: 1px solid #ccc;width: 50%;margin: auto;border-radius: 10px;margin-bottom: 2rem;background-color: #ff6565;padding: 10px;">
-                                                <h1 style="margin: 0; color: #fff;">AUX</h1>
+                                                <h1 style="margin: 0; color: #fff;">{{ userProgramType }}</h1>
                                             </div>
                                         </td>
                                     </tr>
@@ -352,7 +352,7 @@
                                         <td>
                                             <h2>Profesión u Ocupación:</h2>
                                             <div style="border: 1px solid #ccc;width: 50%;margin: auto;border-radius: 10px;margin-bottom: 2rem;background-color: #ff6565;padding: 10px;">
-                                                <h1 style="margin: 0; color: #fff;">Auxiliar de Enfermería</h1>
+                                                <h1 style="margin: 0; color: #fff;">{{ userOcupation }}</h1>
                                             </div>
                                         </td>
                                     </tr>
@@ -371,13 +371,13 @@
                                     <td>
                                         <h5 style="margin: 0 !important;">Número:</h5>
                                     </td>
-                                    <td>{{ doctorDocumentNumber }}</td> 
+                                    <td>{{ incapacityNumber }}</td> 
                                 </tr>
                                 <tr>
                                     <td>
                                         <h5 style="margin: 0 !important;">Fecha emisión:</h5>
                                     </td>
-                                    <td>{{ doctorDocumentNumber }}</td>
+                                    <td>{{ fechaEmision }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -398,7 +398,7 @@
                                     <td>
                                         <h5 style="margin: 0 !important;">Tipo Documento:</h5>
                                     </td>
-                                    <td>{{ doctorDocumentNumber }}</td> 
+                                    <td>{{ doctorDocumentNumberType }}</td> 
                                 </tr>
                                 <tr>
                                     <td>
@@ -429,13 +429,13 @@
                                     <td>
                                         <h5 style="margin: 0 !important;">Correo:</h5>
                                     </td>
-                                    <td>{{ doctorEmail }}</td>
+                                    <td><a href="mailto:{{ doctorEmail }}">{{ doctorEmail }}</a></td>
                                 </tr>
                                 <tr>
                                     <td>
                                         <h5 style="margin: 0 !important;">Teléfono:</h5>
                                     </td>
-                                    <td>{{ doctorEmail }}</td>
+                                    <td><a href="tel:{{ doctorPhoneNumber }}">{{ doctorPhoneNumber }}</a></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -456,7 +456,7 @@
                                     <td>
                                         <h5 style="margin: 0 !important;">Tipo Documento:</h5>
                                     </td>
-                                    <td>{{ patientname }}</td>
+                                    <td>{{ patientDocumentType }}</td>
                                 </tr>
                                 <tr>
                                     <td>
@@ -474,13 +474,13 @@
                                     <td>
                                         <h5 style="margin: 0 !important;">Correo:</h5>
                                     </td>
-                                    <td>{{ patientEmail }}</td>
+                                    <td><a href="mailto:{{ patientEmail }}">{{ patientEmail }}</a></td>
                                 </tr>
                                 <tr>
                                     <td>
                                         <h5 style="margin: 0 !important;">Teléfono:</h5>
                                     </td>
-                                    <td>{{ patientEmail }}</td>
+                                    <td><a href="tel:{{ patientPhoneNumber }}">{{ patientPhoneNumber }}</a></td>
                                 </tr>
                             </tbody>
                         </table>
