@@ -74,8 +74,15 @@ const userSignIn = (request, response) => {
     });
 };
 
+const hello = (req, res) => {
+    let params = req.body;
+    console.log('params: ', params);
+    res.status(200).send({ message: ".... Hola mundo!" })
+}
+
 // Exportamos el modulo
 module.exports = {
     userRegister,
     userSignIn,
+    hello,
 };
