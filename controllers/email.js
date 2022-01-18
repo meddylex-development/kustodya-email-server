@@ -22,12 +22,9 @@ let jwt = require("../libs/jwt");
 let moment = require("moment");
 
 const readHTMLFile = (pathTmp) => {
-  console.log('pathTmp: ', pathTmp);
   return new Promise((resolve, reject) => {
     let pathTemplate = path.join(__dirname, '..', pathTmp);
-    console.log('pathTemplate: ', pathTemplate);
     fs.readFile(pathTemplate, { encoding: 'utf-8' }, function (err, html) {
-      // console.log('html: ', html);
         if (err) {
            reject(err); 
            throw err;
@@ -41,11 +38,8 @@ const readHTMLFile = (pathTmp) => {
 
 // funcion que regitra un usuario
 const sendEmail= (request, response) => {
-    // console.log('request: ', request);
-    // console.log('response: ', response);
     // Obtenemos los parametros del body del JSON lo que viene en la API
     let params = request.body;
-    console.log('params: ', params);
     let templateEmailToSend = '';
 
     switch (params.typeMail) {
@@ -61,17 +55,12 @@ const sendEmail= (request, response) => {
     }
 
     readHTMLFile(templateEmailToSend).then((responseData) => {
-      // console.log('responseData: ', responseData);
 
       let urlFile = path.join(__dirname, '..', 'templates/files/DiasAcumulados540.xlsx');
-      console.log('urlFile: ', urlFile);
       let urlLogo = path.join(__dirname, '..', 'templates/images/KustodyYmeddylex.png');
-      console.log('urlLogo: ', urlLogo);
       let urlPhotoProfileDoctor = path.join(__dirname, '..', 'templates/images/person_2.jpeg');
-      console.log('urlPhotoProfileDoctor: ', urlPhotoProfileDoctor);
 
       let patientIncapacities = params.patientIncapacities;
-      console.log('patientIncapacities: ', patientIncapacities);
 
       let template = handlebars.compile(responseData);
       let replacements = {
@@ -107,9 +96,7 @@ const sendEmail= (request, response) => {
         userProgramType: params.userProgramType,
         userOcupation: params.userOcupation,
       };
-      console.log('replacements: ', replacements);
       let htmlToSend = template(replacements);
-      // console.log('htmlToSend: ', htmlToSend);
       let transporter = nodemailer.createTransport({
           host: 'smtp.gmail.com',
           port: 465, 
@@ -131,15 +118,11 @@ const sendEmail= (request, response) => {
         
       transporter.sendMail(mailOptions, function(error, info){
           if (error) {
-            console.log(error);
             response.status(500).send({ error: error });
           } else {
-            console.log('Email sent: ' + info.response);
             response.status(200).send({ response: info });
             // getDataReport('http://meddylex-001-site4.itempurl.com/API').then(resp => {
-            //   console.log('resp: ', resp);
-            //   fnGenerateXlsxFromJson().then(respFile => {
-            //     console.log('respFile: ', respFile);
+            //   fnGenerateFileReport().then(respFile => {
             //   });
             // });
             
@@ -176,22 +159,10 @@ const trackEmail = (request, response) => {
     // });
 };
 
-const fnGenerateXlsxFromJson = (data) => {
-  console.log('data: ', data);
+const fnGenerateFileReport = (dataXls, nameFile, columnNames) => {
   return new Promise ((resolve, reject) => {
-    const data = [
-    {
-        "name":"Shadab Shaikh",
-        "email":"shadab@gmail.com",
-        "mobile":"1234567890"
-    }
-    ]
-
-    const headingColumnNames = [
-        "Name",
-        "Email",
-        "Mobile",
-    ]
+    const data = dataXls;
+    const headingColumnNames = columnNames;
 
     //Write Column Title in Excel file
     let headingColumnIndex = 1;
@@ -204,155 +175,315 @@ const fnGenerateXlsxFromJson = (data) => {
     let rowIndex = 2;
     data.forEach( record => {
         let columnIndex = 1;
-        Object.keys(record ).forEach(columnName =>{
+        Object.keys(record).forEach(columnName =>{
             ws.cell(rowIndex,columnIndex++)
-                .string(record [columnName])
+                .string(record[columnName])
         });
         rowIndex++;
     }); 
-    wb.write('TeacherData.xlsx');
+    wb.write('templates/files/'+nameFile+'.xlsx');
     resolve(true);
   });
 };
 
-const getDataReport = (request, response) => {
-  // return new Promise ((resolve, reject) => {
-
-    // fetch('http://meddylex-001-site4.itempurl.com/API').then(res => {
-    //   console.log('res: ', res);
-    //   let data = res.json();
-    //   console.log('data: ', data);
-    //   resolve(data);
-    // }).then((responseData) => {
-    //   console.log('responseData: ', responseData);
-    //   resolve(responseData);
-    // }).catch(err => {
-    //   console.log(err);
-    //   reject(err);
-    // });
-
-    // var xobj = new XMLHttpRequest();
-    // let urlAPI = 'http://meddylex-001-site4.itempurl.com/api/Transcripcion';
-    // xobj.overrideMimeType("application/json");
-    // xobj.open("GET", urlAPI, true); // Reemplaza colombia-json.json con el nombre que le hayas puesto
-    // xobj.onreadystatechange = function () {
-    //   if (xobj.readyState == 4 && xobj.status === 200) {
-    //     resolve(JSON.parse(xobj.responseText));
-    //   }
-    // };
-    // xobj.send(null);
-
-    // fetch('https://jsonplaceholder.typicode.com/users')
-    //   .then(response => {
-    //     console.log('response: ', response);
-    //     return response.json();
-    //   }).then(json => {
-    //     console.log(json)
-    //     resolve(json)
-    //   })
-
-    // const url = "http://meddylex-001-site4.itempurl.com/api/Transcripcion";
-    // https.get(url, res => {
-    //   let data = '';
-    //   res.on('data', chunk => {
-    //     data += chunk;
-    //   });
-    //   res.on('end', () => {
-    //     data = JSON.parse(data);
-    //     console.log(data);
-    //   })
-    // }).on('error', err => {
-    //   console.log(err.message);
-    // })
-
-    fetch("http://meddylex-001-site4.itempurl.com/api/Transcripcion")
+const getDataReport = () => {
+  return new Promise ((resolve, reject) => {
+    fetch("http://meddylex-001-site4.itempurl.com/api/Reporte")
     .then(res => res.json())
     .then(json => {
-      console.log(json);
       if (json) {
-        // resolve(json);
-        response.status(200).send({ response: json });
+        resolve(json);
+        // response.status(200).send({ response: json });
       } else {
-        // reject(false)
-        response.status(500).send({ response: null });
+        reject(false)
+        // response.status(500).send({ response: null });
       }
     });
-
-
-  // })
+  })
 };
 
-// funcion que regitra un usuario
+const getDataReportIncapacitiesByDateRange = (startDate, endDate) => {
+  return new Promise ((resolve, reject) => {
+    let urlApi = "http://meddylex-001-site4.itempurl.com/api/Reporte/fechas?FechaDesde="+startDate+"&FechaHasta="+endDate;
+    fetch(urlApi)
+    .then(res => res.json())
+    .then(json => {
+      if (json) {
+        resolve(json);
+        // response.status(200).send({ response: json });
+      } else {
+        reject(false)
+        // response.status(500).send({ response: null });
+      }
+    });
+  })
+};
+
 const sendEmailReport= (request, response) => {
-  // console.log('request: ', request);
-  // console.log('response: ', response);
   // Obtenemos los parametros del body del JSON lo que viene en la API
   let params = request.body;
-  console.log('params: ', params);
 
   readHTMLFile('templates/email-alert-incapacity-03.html').then((responseData) => {
-    // console.log('responseData: ', responseData);
 
-    let urlFile = path.join(__dirname, '..', 'templates/files/DiasAcumulados540.xlsx');
-    console.log('urlFile: ', urlFile);
+    // let urlFile = path.join(__dirname, '..', 'templates/files/DiasAcumulados540.xlsx');
+    let urlFile = path.join(__dirname, '..', 'templates/files/ArchivoReporte.xlsx');
     let urlLogo = path.join(__dirname, '..', 'templates/images/KustodyYmeddylex.png');
-    console.log('urlLogo: ', urlLogo);
     let urlPhotoProfileDoctor = path.join(__dirname, '..', 'templates/images/person_2.jpeg');
-    console.log('urlPhotoProfileDoctor: ', urlPhotoProfileDoctor);
 
     let patientIncapacities = params.patientIncapacities;
-    console.log('patientIncapacities: ', patientIncapacities);
 
     let template = handlebars.compile(responseData);
     let replacements = {
       urlLogo: urlLogo,
       urlPhotoProfileDoctor: urlPhotoProfileDoctor,
     };
-    console.log('replacements: ', replacements);
     let htmlToSend = template(replacements);
-    // console.log('htmlToSend: ', htmlToSend);
-    let transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465, 
-        secure: true,
-        // service: 'gmail',
-        auth: {
-          user: 'meddylex.development@gmail.com',
-          pass: 'eejnoxuksuawommh'
+    getDataReport().then((respReport) => {
+
+      const headingColumnNames = [
+        "NUMERO_IEG",
+        "DIAGNOSTICO",
+        "TIPO_ID_AFILIADO",
+        "NUM_ID_AFILIADO",
+        "DIAS_SOLICITADOS",
+        "DIAS_TOPE",
+        "DIAS_EXCESO",
+        "DIAS_EXCESO_PRORROGA",
+        "DIAS_ACUMULADOS_PRORROGA",
+        "DIAS_APROBADOS",
+        "DIAS_PAGADOS",
+        "VALOR_DIARIO",
+        "VALOR_EXESO",
+        "VALOR_EXCESO_PRORROGA",
+        "IBC",
+        "VALOR_PAGADO",
+        "FECHA_RADICACION",
+        "FECA_INICIO",
+        "FECHA_FIN",
+        "USUARIO_RADICACION",
+        "PRORROGA",
+        "AGRUPADOR_ESTADO",
+        "ESTADO",
+        "TIPO_ID_EMPLEADOR",
+        "NUM_ID_EMPLEADOR",
+        "NOMBRE_EMPLEADOR",
+        "EMPRESA_VIP",
+        "TIPO_COTIZANTE",
+        "IPS_PRIMARIA",
+        "IPS_IEG",
+        "IPS_NO_ADSCRITA",
+        "REGISTRO_MEDICO",
+        "NOMBRE_MEDICO",
+        "ESPECIALIDAD",
+        "AGRUPADOR_IPS",
+        "ORIGEN_IEG",
+        "NOMBRE_COHORTE",
+        "USUARIO_PAC",
+        "MUNICIPIO",
+        "DEPARTAMENTO",
+        "REGIONAL",
+        "NODO",
+        "FECHA_INICIO_EMPLEO",
+        "FECHA_NACIMIENTO",
+        "EDAD",
+        "GENERO",
+        "RANGO_IBC",
+        "GRUPO_RIESGO",
+        "PLAN_ATENCION",
+        "PLAN_PRESTACION",
+        "DIAS_CUMULADOS",
+        "REPORTE_DIAS",
+        "FECHA_AUTORIZACION",
+        "FECHA_PAGO",
+        "NUMERO_AUTORIZACION",
+        "CQX_FECHA_DECISION",
+        "PROCEDIMIENTO_AUTORIZADO",
+        "IPS_AUTORIZADA",
+        "GENERADA_POR",
+        "AGRUPADOR_DIAS1_180",
+        "AGRUP_PATOLOGIA",
+        "AGRUP_NNT",
+        "REG_AUT",
+        "PROCESADO",
+        "CONSECUTIVO",
+        "ARCHIVO_ENVIO",
+        "CONCEPTO_REHABILIACION",
+        "AGRP_ACUMULADO_PRORROGA",
+        "MUNICIPIO_IPS",
+        "DEPARTAMENTO_IPS",
+        "REGIONAL_IPS",
+        "NODO_IPS",
+        "MARCA_VALOR",
+        "COD_IPS_IGE",
+        "COD_IPS_PRIMARIA",
+        "FECHA_CONTABILIZACION",
+        "ESTADO_AUTORZ",
+        "ESTADO_CTA_COBRO",
+        "FECHA_ENTREGADA",
+        "PERIODO_SUBSIDIO",
+        "TIPO_AMBITO",
+        "OBS_TID_CODIGO_MED",
+        "OBS_IDENTIFIC_MED",
+        "OBS_NRO_CTA_COBRO",
+        "OBS_TUTELA",
+        "OBS_CAUSAL_NEGACION",
+        "OBS_AUDITORIA_MEDLABORAL",
+        "VerPresuntoDuplicado",
+        "VerDuplicado",
+        "Licencia",
+        "IdIncapacidad",
+        "Duplicado",
+        "PresuntoDuplicado",
+        "RoojoRegistradoEnRethusCruzado",
+        "RoojoITSancionadosCruzado",
+        "RoojoPersonalNoAutorizadoCruzado",
+        "RoojoRegistroMedicoCruzado",
+        "TipoPrograma",
+        "Escolaridad",
+        "RoojoTipoIdentificacionMedicoCruzado",
+        "EsNumerico"
+      ];
+
+      fnGenerateFileReport(respReport,"ArchivoReporte", headingColumnNames).then((respFile) => {
+
+        console.log('respFile: ', respFile);
+
+        if(respFile) {
+          let transporter = nodemailer.createTransport({
+              host: 'smtp.gmail.com',
+              port: 465, 
+              secure: true,
+              // service: 'gmail',
+              auth: {
+                user: 'meddylex.development@gmail.com',
+                pass: 'eejnoxuksuawommh'
+              }
+          });
+    
+          let mailOptions = {
+              from: 'Kustodya App <meddylex.development@gmail.com>',
+              to: params.email,
+              subject: params.subject,
+              // text: 'That was easy!'
+              html : htmlToSend,
+              attachments: [
+                {   // utf-8 string as an attachment
+                    // filename: urlFile,
+                    filename: 'ArchivoReporte.xlsx',
+                    path: urlFile,
+                },
+              ],
+          };
+            
+          transporter.sendMail(mailOptions, function(error, info){
+              if (error) {
+                response.status(500).send({ error: error });
+              } else {
+                response.status(200).send({ response: info });
+              }
+          });
         }
+      })
+
     });
       
-    let mailOptions = {
-        from: 'Kustodya App <meddylex.development@gmail.com>',
-        to: params.email,
-        subject: params.subject,
-        // text: 'That was easy!'
-        html : htmlToSend,
-        attachments: [
-          {   // utf-8 string as an attachment
-              // filename: urlFile,
-              filename: 'ArchivoReporte.xlsx',
-              path: urlFile,
-          },
-        ],
+  })    
+};
+
+const SendMailReportIncapacitiesByDateRange = (request, response) => {
+  // Obtenemos los parametros del body del JSON lo que viene en la API
+  let params = request.body;
+
+  readHTMLFile('templates/email-alert-incapacity-07.html').then((responseData) => {
+
+    // let urlFile = path.join(__dirname, '..', 'templates/files/DiasAcumulados540.xlsx');
+    let urlFile = path.join(__dirname, '..', 'templates/files/ArchivoReporteIncapacidades.xlsx');
+    let urlLogo = path.join(__dirname, '..', 'templates/images/KustodyYmeddylex.png');
+    let urlPhotoProfileDoctor = path.join(__dirname, '..', 'templates/images/person_2.jpeg');
+
+    let startDate = params.startDate;
+    let endDate = params.endDate;
+    
+
+    let template = handlebars.compile(responseData);
+    let replacements = {
+      urlLogo: urlLogo,
+      urlPhotoProfileDoctor: urlPhotoProfileDoctor,
+      startDate: moment(startDate).format('DD/MM/YYYY'),
+      endDate: moment(endDate).format('DD/MM/YYYY'),
     };
-      
-    transporter.sendMail(mailOptions, function(error, info){
-        if (error) {
-          console.log(error);
-          response.status(500).send({ error: error });
-        } else {
-          console.log('Email sent: ' + info.response);
-          response.status(200).send({ response: info });
-          // getDataReport('http://meddylex-001-site4.itempurl.com/API').then(resp => {
-          //   console.log('resp: ', resp);
-          //   fnGenerateXlsxFromJson().then(respFile => {
-          //     console.log('respFile: ', respFile);
-          //   });
-          // });
-          
+    let htmlToSend = template(replacements);
+    getDataReportIncapacitiesByDateRange(startDate, endDate).then((respReport) => {
+
+      respReport.forEach((value, key) => {
+        value['FechaElaboracion'] = String(value['FechaElaboracion']);
+        value['DescripcionFicha'] = String(value['DescripcionFicha']);
+        value['SituacionEncontrada'] = String(value['SituacionEncontrada']);
+        value['UsuarioCreacionId'] = String(value['UsuarioCreacionId']);
+        value['Descripcion'] = String(value['Descripcion']);
+        value['NroIncapacidad'] = String(value['NroIncapacidad']);
+        value['CodigoContable'] = String(value['CodigoContable']);
+        value['NitTercero'] = String(value['NitTercero']);
+        value['Debito'] = String(value['Debito']);
+        value['Credito'] = String(value['Credito']);
+      });
+
+      const headingColumnNames = [
+        "FechaElaboracion",
+        "DescripcionFicha",
+        "SituacionEncontrada",
+        "UsuarioCreacionId",
+        "Descripcion",
+        "NroIncapacidad",
+        "CodigoContable",
+        "NitTercero",
+        "Debito",
+        "Credito",
+      ];
+      console.log('respReport: ', respReport);
+      fnGenerateFileReport(respReport, "ArchivoReporteIncapacidades", headingColumnNames).then((respFile) => {
+
+        console.log('respFile: ', respFile);
+
+        if(respFile) {
+          let transporter = nodemailer.createTransport({
+              host: 'smtp.gmail.com',
+              port: 465, 
+              secure: true,
+              // service: 'gmail',
+              auth: {
+                user: 'meddylex.development@gmail.com',
+                pass: 'eejnoxuksuawommh'
+              }
+          });
+    
+          let mailOptions = {
+              from: 'Kustodya App <meddylex.development@gmail.com>',
+              to: params.email,
+              subject: params.subject,
+              // text: 'That was easy!'
+              html : htmlToSend,
+              attachments: [
+                {   // utf-8 string as an attachment
+                    // filename: urlFile,
+                    filename: 'ArchivoReporte.xlsx',
+                    path: urlFile,
+                },
+              ],
+          };
+            
+          transporter.sendMail(mailOptions, function(error, info){
+              if (error) {
+                response.status(500).send({ error: error });
+              } else {
+                response.status(200).send({ response: info });
+              }
+          });
         }
+      })
+
     });
+      
   })    
 };
 
@@ -361,7 +492,8 @@ const sendEmailReport= (request, response) => {
 module.exports = {
     sendEmail,
     trackEmail,
-    fnGenerateXlsxFromJson,
+    fnGenerateFileReport,
     sendEmailReport,
+    SendMailReportIncapacitiesByDateRange,
     getDataReport,
 };

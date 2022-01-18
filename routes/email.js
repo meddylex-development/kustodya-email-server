@@ -21,7 +21,14 @@ api.post("/send-email-report", Email.sendEmailReport);
 
 // Servicio POST para registrar actividad en envio de correos
 // http://localhost:3001/api/send-email-report 
-api.get("/data-ocr", Email.getDataReport);
+api.post("/send-email-report-incapacities", Email.SendMailReportIncapacitiesByDateRange);
+
+// Servicio POST para registrar actividad en envio de correos
+// http://localhost:3001/api/send-email-report 
+// api.get("/report-data", Email.getDataReport);
+
+// http://localhost:3001/api/send-email-report 
+// api.post("/report", Email.fnGenerateXlsxFromJson);
 
 // Exportamos el modulo
 module.exports = api;
