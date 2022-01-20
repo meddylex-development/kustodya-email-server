@@ -10,9 +10,6 @@ let port = process.env.PORT || 3001 // Procesar y enviar puertos. process nos ay
 let app = express();
 
 // Se importan las rutas 
-let User = require("./routes/user");
-let Category = require("./routes/category");
-let Course = require("./routes/course");
 let Email = require("./routes/email");
 
 // Conexion a DB Mongo
@@ -70,9 +67,6 @@ app.use((req, res, next) => {
   });
 
 // usar rutas (API)
-app.use("/api", User);
-app.use("/api", Category);
-app.use("/api", Course);
 app.use("/api", Email);
 
 // Modulo para importar
