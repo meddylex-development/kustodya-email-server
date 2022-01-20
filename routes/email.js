@@ -24,5 +24,12 @@ api.get("/data-ocr", Email.getDataOCRTranscription);
 api.post("/send-email-report", Email.sendEmailReportPatients540days);
 
 
+// Servicio POST para enviar el reporte de incapacidades creadas en un rango de fechas
+// http://localhost:3001/api/send-email-report-incapacities 
+api.post("/send-email-report-incapacities", Email.sendMailReportIncapacitiesByDateRange);
+
+// http://localhost:3001/api/send-email-report 
+// api.post("/report", Email.fnGenerateXlsxFromJson);
+
 // Exportamos el modulo
 module.exports = api;

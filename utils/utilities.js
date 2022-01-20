@@ -98,44 +98,34 @@ const sendEmail = (stringHTML, textBodyEmail, replacementsHTML, dataInfoMail, fi
     });
 }
 
-const fnJsonToExcelFile = (data) => {
-    console.log('data: ', data);
+const fnJsonToExcelFile = (dataXls, pathFileSave, nameFile, columnNames) => {
     return new Promise ((resolve, reject) => {
-        const data = [
-            {
-                "name":"Shadab Shaikh",
-                "email":"shadab@gmail.com",
-                "mobile":"1234567890"
-            },
-        ];
-
-        const headingColumnNames = [
-            "Name",
-            "Email",
-            "Mobile",
-        ];
-
+        const data = dataXls;
+        const headingColumnNames = columnNames;
+    
         //Write Column Title in Excel file
         let headingColumnIndex = 1;
         headingColumnNames.forEach(heading => {
-            ws.cell(1, headingColumnIndex++).string(heading)
+            ws.cell(1, headingColumnIndex++)
+                .string(heading)
         });
-
+    
         //Write Data in Excel file
         let rowIndex = 2;
         data.forEach( record => {
             let columnIndex = 1;
-            Object.keys(record ).forEach(columnName =>{
-                ws.cell(rowIndex,columnIndex++).string(record [columnName])
+            Object.keys(record).forEach(columnName =>{
+                ws.cell(rowIndex,columnIndex++)
+                    .string(record[columnName])
             });
             rowIndex++;
         }); 
-        
-        if (wb.write('TeacherData.xlsx')) {
-            resolve(true);   
-        } else {
+        if (!wb.write(pathFileSave + nameFile)) {
             reject(false);
+        } else {
+            resolve(true);
         }
+        
     });
 };
 
@@ -145,4 +135,5 @@ module.exports = {
     getDateNow,
     getDateNowValueOf,
     sendEmail,
+    fnJsonToExcelFile,
 };
