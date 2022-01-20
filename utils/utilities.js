@@ -31,7 +31,7 @@ const getAPIRestUrl = (url_api) => {
         fetch(urlApi)
         .then(res => res.json())
         .then(json => {
-            console.log(json);
+            // console.log(json);
             if (!json) {
                 reject(false);
             } else {
@@ -41,13 +41,20 @@ const getAPIRestUrl = (url_api) => {
     });
 }
 
-const getDateNow = (format) => {
+const getDateNow = (format = '') => {
     let formatDate = (format) ? format : 'DD/MM/YYYY HH:mm';
     return moment().format(formatDate);
 }
 
 const getDateNowValueOf = () => {
     return moment().valueOf();
+}
+
+const getDateFormat = (timestamp = '', format = '') => {
+    // 'DD/MM/YYYY'
+    // 'DD/MM/YYYY HH:mm'
+    let formatDate = (format) ? format : 'DD/MM/YYYY';
+    return moment(timestamp).format('DD/MM/YYYY');
 }
 
 const sendEmail = (stringHTML, textBodyEmail, replacementsHTML, dataInfoMail, filesToSend) => {
@@ -99,7 +106,12 @@ const sendEmail = (stringHTML, textBodyEmail, replacementsHTML, dataInfoMail, fi
 }
 
 const fnJsonToExcelFile = (dataXls, pathFileSave, nameFile, columnNames) => {
+    console.log('dataXls: ', dataXls);
+    console.log('columnNames: ', columnNames);
+    console.log('pathFileSave: ', pathFileSave);
+    console.log('nameFile: ', nameFile);
     return new Promise ((resolve, reject) => {
+        let writeFile = null;
         const data = dataXls;
         const headingColumnNames = columnNames;
     
@@ -115,16 +127,20 @@ const fnJsonToExcelFile = (dataXls, pathFileSave, nameFile, columnNames) => {
         data.forEach( record => {
             let columnIndex = 1;
             Object.keys(record).forEach(columnName =>{
-                ws.cell(rowIndex,columnIndex++)
-                    .string(record[columnName])
+                ws.cell(rowIndex,columnIndex++).string(record[columnName]);
             });
             rowIndex++;
-        }); 
-        if (!wb.write(pathFileSave + nameFile)) {
-            reject(false);
-        } else {
-            resolve(true);
-        }
+        });
+        wb.write(pathFileSave + nameFile);
+        resolve(true);
+        // writeFile = wb.write(pathFileSave + nameFile);
+        // if (writeFile) {
+        //     console.log("Si se guardo ese rey!🤴🏻");
+        //     resolve(true);
+        // } else {
+        //     console.log("No se guardo ese peto!🍚");
+        //     reject(false);
+        // }
         
     });
 };

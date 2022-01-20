@@ -1,5 +1,6 @@
 // Variable donde se importa el modulo email
 // let Email = require("../models/email");
+let moment = require("moment");
 let path = require("path");
 let Utilities = require('../utils/utilities');
 
@@ -182,7 +183,7 @@ const sendMailReportIncapacitiesByDateRange = (request, response) => {
         "Debito",
         "Credito",
       ];
-      console.log('respReport: ', respReport);
+      // console.log('respReport: ', respReport);
       Utilities.fnJsonToExcelFile(respReport, pathFileSave, nameFileSave, headingColumnNames).then((respFile) => {
 
         console.log('respFile: ', respFile);
@@ -194,8 +195,8 @@ const sendMailReportIncapacitiesByDateRange = (request, response) => {
           let replacementsHTML = {
             urlLogo: urlLogo,
             urlPhotoProfileDoctor: urlPhotoProfileDoctor,
-            startDate: moment(startDate).format('DD/MM/YYYY'),
-            endDate: moment(endDate).format('DD/MM/YYYY'),
+            startDate: Utilities.getDateFormat(startDate),
+            endDate: Utilities.getDateFormat(endDate),
           };
           let dataInfoMail = {
             from: 'Kustodya App <meddylex.development@gmail.com>',
