@@ -143,6 +143,7 @@ const sendEmailReportPatients540days= (request, response) => {
 const sendMailReportIncapacitiesByDateRange = (request, response) => {
   // Obtenemos los parametros del body del JSON lo que viene en la API
   let params = request.body;
+  console.log('params: ', params);
 
   Utilities.readHTMLFile('templates/email-alert-incapacity-07.html').then((responseData) => {
 

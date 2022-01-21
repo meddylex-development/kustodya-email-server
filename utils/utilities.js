@@ -54,7 +54,7 @@ const getDateFormat = (timestamp = '', format = '') => {
     // 'DD/MM/YYYY'
     // 'DD/MM/YYYY HH:mm'
     let formatDate = (format) ? format : 'DD/MM/YYYY';
-    return moment(timestamp).format('DD/MM/YYYY');
+    return moment(timestamp).format(formatDate);
 }
 
 const sendEmail = (stringHTML, textBodyEmail, replacementsHTML, dataInfoMail, filesToSend) => {
@@ -152,4 +152,5 @@ module.exports = {
     getDateNowValueOf,
     sendEmail,
     fnJsonToExcelFile,
+    getDateFormat,
 };
