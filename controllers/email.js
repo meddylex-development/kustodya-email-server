@@ -139,7 +139,7 @@ const sendEmailReportPatients540days= (request, response) => {
   }); 
 };
 /* *********** END - Funcion sendEmailReportPatients540days - Reporte pacientes con mas de 540 de incapacidad *********** */
-
+/* ********** START - Funcion hello - sendMailReportIncapacitiesByDateRange ********** */
 const sendMailReportIncapacitiesByDateRange = (request, response) => {
   // Obtenemos los parametros del body del JSON lo que viene en la API
   let params = request.body;
@@ -229,7 +229,8 @@ const sendMailReportIncapacitiesByDateRange = (request, response) => {
       
   })
 };
-
+/* *********** END - Funcion hello - sendMailReportIncapacitiesByDateRange *********** */
+/* ********** START - Funcion hello - getDataReport ********** */
 const getDataReport = () => {
   return new Promise ((resolve, reject) => {
       fetch("http://meddylex-001-site4.itempurl.com/api/Reporte")
@@ -245,7 +246,7 @@ const getDataReport = () => {
       });
   })
 };
-
+/* *********** END - Funcion hello - getDataReport *********** */
 // Exportamos el modulo
 module.exports = {
     hello,
