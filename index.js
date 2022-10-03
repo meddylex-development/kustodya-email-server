@@ -18,8 +18,8 @@ let Email = require("./routes/email");
 // (bitstoredb es el nombre de la base de datos, que la crea asi no exista en mongo)
 // 27017 es el puerto designado por defecto para mongo
 // Se crera callback de cone
-// mongoose.connect("mongodb://localhost:27017/kustodyadb",
-mongoose.connect("mongodb+srv://meddylex_development:Meddylex123@cluster0.emul9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+mongoose.connect("mongodb://localhost:27017/kustodyadb",
+// mongoose.connect("mongodb+srv://meddylex_development:Meddylex123@cluster0.emul9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
     { 
         useUnifiedTopology: true, 
         useNewUrlParser: true 
